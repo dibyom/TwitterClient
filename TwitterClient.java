@@ -16,8 +16,8 @@ public class TwitterClient {
 			if(args.length == 1 && args[0].equals("-timeline")){
 				showTimeline();
 			}
-			else if (args.length == 1 && args[0].equals("-tweet")) {
-				sendTweet();
+			else if (args.length == 2 && args[0].equals("-tweet")) {
+				sendTweet(args[1]);
 				
 			}
 			else{
@@ -25,7 +25,7 @@ public class TwitterClient {
 				System.out.println("Usage:");
 				System.out.println("java TwitterClient -timeline");
 				System.out.println("  Display your timeline");
-				System.out.println("java TwitterClient -tweet");
+				System.out.println("java TwitterClient -tweet [YOUR TWEET]");
 				System.out.println("  Send a tweet!");
 			}
 		}
@@ -59,40 +59,22 @@ public class TwitterClient {
 		}
 	}
 
-	static void sendTweet(){
-		ArrayList<Tweet> validTweets = new ArrayList<Tweet>();
-		ArrayList<String> invalidTweetMessages = new ArrayList<String>();
-
-		Scanner sc = null;
-		try {
-			sc = new Scanner(new File("Tweets.txt"));
-		}
-
-		catch(FileNotFoundException e) {
-			e.printStackTrace();
-		}
+	static void sendTweet(String tweetMessage){
 
 		try{
 			Twitter twitter = new TwitterFactory().getInstance();
 			User user = twitter.verifyCredentials();
-			while (sc.hasNextLine()) {
-				String currentTweetMessage = sc.nextLine();
-				if( Tweet.isValidMessage(currentTweetMessage) ) {
-					Tweet currentTweet = new Tweet();
-					currentTweet.setMessage(currentTweetMessage);
-					validTweets.add(currentTweet);
-				}
-				else {
-					invalidTweetMessages.add(currentTweetMessage);
-				}
-
-				for( Tweet currentTweet : validTweets ) {
-
-					Status status = twitter.updateStatus(currentTweet.getMessage());
-					System.out.println("Successfully updated the status to [" + status.getText() + "].");
-
-				}
+			Tweet myTweet = new Tweet();
+			//if tweet is valid, send it
+			if(myTweet.isValidMessage(tweetMessage)){
+				myTweet.setMessage(tweetMessage);
+				Status status = twitter.updateStatus(myTweet.getMessage());
+				System.out.println("Successfully updated status to [" + status.getText() + "].");
 			}
+			else{
+				System.out.println("Your tweet is not valid (140 characters or less, please!).");
+			}
+			
 		}
 		catch(TwitterException te){
 			te.printStackTrace();
