@@ -43,7 +43,7 @@ public class TwitterClient {
 	    // gets Twitter instance with default credentials
 			Twitter twitter = new TwitterFactory().getInstance();
 			User user = twitter.verifyCredentials();
-			List<Status> statuses = twitter.getHomeTimeline();
+			List<Status> statuses = twitter.getHomeTimeline(new Paging(1,200));
 			// display current Teets in my stream of messages
 			System.out.println("Showing @" + user.getScreenName() + "'s home timeline.");
 			for (Status status : statuses) {
